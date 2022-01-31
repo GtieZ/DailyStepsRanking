@@ -2,26 +2,23 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
 
-    <div v-for="user in users.results" :key="user.id">
-      
-      <p>id: {{user.id}}</p>
-      <p>username: {{user.username}}</p>
-      <p>email: {{user.email}}</p>
-      <p>date_joined: {{user.date_joined}}</p>
-      <p>avg_steps: {{user.avg_steps}}</p>
-      <p>avg_distance: {{user.avg_distance}}</p>
-      <p>avg_calories: {{user.avg_calories}}</p>
-      <p>avg_active_minutes: {{user.avg_active_minutes}}</p>
-      <hr>
-
+    <div v-for="user in users" :key="user.id">
+      <p>id: {{ user.id }}</p>
+      <p>username: {{ user.username }}</p>
+      <p>email: {{ user.email }}</p>
+      <p>date_joined: {{ user.date_joined }}</p>
+      <p>avg_steps: {{ user.avg_steps }}</p>
+      <p>avg_distance: {{ user.avg_distance }}</p>
+      <p>avg_calories: {{ user.avg_calories }}</p>
+      <p>avg_active_minutes: {{ user.avg_active_minutes }}</p>
+      <hr />
     </div>
-
-
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import general from "../general/general";
 
 export default {
   name: "HelloWorld",
@@ -30,26 +27,57 @@ export default {
   },
   data() {
     return {
-      users: "",
+      data: undefined,
+      users: [],
     };
+  },
+  methods: {
+    getUsers() {
+      let token = general.token;
+      let config = {
+        headers: {
+          Authorization: "Token " + token,
+          "Content-Type": "application/json",
+        },
+        params: { limit: 1000 },
+      };
+
+      let url = general.url;
+      let endpoint = url + "users/";
+
+      axios.get(endpoint, config).then((response) => {
+        this.data = response.data;
+        this.users = this.sortBySteps(this.data.results);
+      });
+    },
+
+    sortBySteps(users) {
+      return users.sort((a, b) => b.avg_steps - a.avg_steps);
+    },
+
+    sortByDistance(users) {
+      return users.sort((a, b) => b.avg_distance - a.avg_distance);
+    },
+
+    sortByCalories(users) {
+      return users.sort((a, b) => b.avg_calories - a.avg_calories);
+    },
+
+     sortByActiveMinutes(users) {
+      return users.sort((a, b) => b.active_minutes - a.active_minutes);
+    },
+
+    
+
+
   },
 
   beforeMount() {
-    let config = {
-      headers: {
-        Authorization: "Token af61aed7399dc6a636e443cdc8a2d55db97c524a",
-        "Content-Type": "application/json",
-      },
-    };
-
-    axios
-      .get("https://step-meter-pp4publmdq-ez.a.run.app/users/", config)
-      .then((response) => {
-        this.users = response.data;
-      });
-
-
+    this.getUsers();
   },
+
+
+
 };
 </script>
 
