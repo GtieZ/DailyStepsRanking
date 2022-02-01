@@ -1,10 +1,26 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+
+    <h1>Ranking</h1>
+
+    <button>Sort by steps</button>
+    <button>Sort by distance</button>
+    <button>Sort by calories</button>
+    <button>Sort by minutes</button>
+  
 
     <div v-for="user in users" :key="user.id">
       <p>id: {{ user.id }}</p>
-      <p>username: {{ user.username }}</p>
+
+
+      <p>
+        username: 
+        <router-link :to="{ name: 'UserId',  params: { username: user.username }}">
+          {{ user.username }}
+        </router-link>
+      </p>
+
+
       <p>email: {{ user.email }}</p>
       <p>date_joined: {{ user.date_joined }}</p>
       <p>avg_steps: {{ user.avg_steps }}</p>
@@ -12,6 +28,8 @@
       <p>avg_calories: {{ user.avg_calories }}</p>
       <p>avg_active_minutes: {{ user.avg_active_minutes }}</p>
       <hr />
+
+
     </div>
   </div>
 </template>
@@ -21,9 +39,9 @@ import axios from "axios";
 import general from "../general/general";
 
 export default {
-  name: "HelloWorld",
+  name: "RankingComponent",
   props: {
-    msg: String,
+
   },
   data() {
     return {
@@ -88,18 +106,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
