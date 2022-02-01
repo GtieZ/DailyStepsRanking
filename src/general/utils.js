@@ -87,7 +87,6 @@ export function isLastWeek(customDay) {
 
 
 export function isLastMonth(customDay){
-
     let customDay_year = customDay.substring(0,4)
     let customDay_month = customDay.substring(5,7);
 
@@ -109,6 +108,27 @@ export function isLastMonth(customDay){
   }
 
 
+export function getUserAverage(data){
+    let activeMinutes = 0;
+    let calories = 0;
+    let distance = 0;
+    let steps = 0;
 
+    data.forEach((item) => {
+      activeMinutes += item.active_minutes;
+      calories += item.calories;
+      distance += item.distance;
+      steps += item.steps;
+    });
+
+    let average = {
+      activeMinutes: Math.round(activeMinutes/data.length),
+      calories: Math.round(calories/data.length),
+      distance: Math.round(distance/data.length),
+      steps: Math.round(steps/data.length),
+    };
+
+    return average;
+}
 
 

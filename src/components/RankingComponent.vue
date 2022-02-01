@@ -2,8 +2,8 @@
   <div class="ranking">
     <h1>Ranking</h1>
 
-    <button @click="onClick">Sort by steps</button>
-    <button>Sort by distance</button>
+    <button @click="onClickNtn1">Sort by steps</button>
+    <button @click="onClickNtn2">Sort by distance</button>
     <button>Sort by calories</button>
     <button>Sort by minutes</button>
 
@@ -56,8 +56,7 @@
 import axios from "axios";
 import general from "../general/general";
 import axiosConfig from "../general/axios-config";
-
-//import { isLastWeek, isLastMonth } from '../general/utils'
+import { getUserAverage, isLastWeek, isLastMonth } from '../general/utils';
 
 export default {
   name: "RankingComponent",
@@ -94,13 +93,53 @@ export default {
         this.users[i].user_daily_data = userDailyData;
       }
       this.dailyDataCompleted = true;
+      console.log('finalizado');
+    },
+
+    getLastWeekAverage(){
+      this.users.forEach((user, index) => {
+        let dailyData = user.user_daily_data;
+
+        let filteredData = dailyData.filter((item) => {
+          return isLastWeek(item.date);
+        });
+
+        this.users[index].lastWeekAverage = getUserAverage(filteredData);
+      });
+
+      console.log(this.users);
+    },
+
+    getLastMonthAverage(){
+      this.users.forEach((user, index) => {
+        let dailyData = user.user_daily_data;
+
+        let filteredData = dailyData.filter((item) => {
+          return isLastMonth(item.date);
+        });
+
+        this.users[index].lastMonthAverage = getUserAverage(filteredData);
+      });
+
+      console.log(this.users);
     },
 
  
 
 
 
-    onClick() {
+    onClickBtn1() {
+
+      this.getLastWeekAverage();
+      
+      
+
+    },
+
+
+     onClickBtn2() {
+
+      this.getLastMonthAverage();
       
       
 
