@@ -54,11 +54,10 @@
 
 <script>
 import axios from "axios";
-import moment from "moment";
 import general from "../general/general";
 import axiosConfig from "../general/axios-config";
 
-import isLastWeek from '../general/utils'
+//import { isLastWeek, isLastMonth } from '../general/utils'
 
 export default {
   name: "RankingComponent",
@@ -97,129 +96,19 @@ export default {
       this.dailyDataCompleted = true;
     },
 
-    isLastMonth(customDay){
-      let customDay_year = customDay.substring(0,4)
-      let customDay_month = customDay.substring(5,7);
+ 
 
-      let today = moment().format("YYYY-MM-DD");
-      let today_year = today.substring(0,4);
-      let today_month = today.substring(5,7);
-
-      if (customDay_year == today_year){
-        return  (Number(today_month)-Number(customDay_month) == 1);
-      }
-
-      if(Number(today_year)-Number(customDay_year) == 1){
-        if(today_month == "01" && customDay_month == "12"){
-          return true
-        }
-      }
-
-      return false;
-    },
-
-    isLastWeek(customDay){
-
-
-      moment.updateLocale('en', {
-        week: {
-          dow : 1, // Monday is the first day of the week.
-        }
-      });
-
-      let customDay_year = customDay.substring(0,4)
-      let customDay_month = customDay.substring(5,7);
-      let customDay_day = customDay.substring(8,10);
-
-      let today = "2022-02-1";
-      //let today = moment().format("YYYY-MM-DD");
-      let today_year = today.substring(0,4);
-      let today_month = today.substring(5,7);
-      let today_day = today.substring(8,10);
-
-      if(customDay_year == today_year){
-        if(customDay_month == today_month){
-          if(Number(customDay_day) > (Number(today_day)-14)){
-            let daysOffset = Number(today_day) - Number(customDay_day);
-            let today_dayOfWeek = moment(today).weekday();
-            let customDay_dayOfWeek = moment (customDay).weekday();
-
-            if((today_dayOfWeek == customDay_dayOfWeek) && (daysOffset == 7)){
-              return true; 
-            }
-            if((customDay_dayOfWeek > today_dayOfWeek) && (daysOffset < 7)){
-              return true;
-            }
-            if((customDay_dayOfWeek < today_dayOfWeek)  && (daysOffset > 7)){
-              return true; 
-            }
-          }
-          return false;
-        }
-
-        if(Number(today_month)-Number(customDay_month) == 1){
-          if(Number(today_day) > 13){
-            return false;
-          }
-
-          let daysOffset = (31-customDay_day) + today_day;
-          if (daysOffset > 13) {
-            return false;
-          }
-
-
-
-
-
-          console.log('mes anterior');
-        }
-
-
-
-
-        //mismo año digerente mes
-        console.log('mismo año diferente mes')
-
-
-      }
-
-      
-
-      
-
-
-
-
-    },
 
 
     onClick() {
-
-   
-      console.log(isLastWeek("2021-12-19"))
-
-
-      //isLastWeek("2022-02-14");
-
-
-      //console.log( moment("2022-02-16").day() );
-
-
-     // console.log(moment().day());
-
-
-      //this.isLastWeek("2022-02-13");
-
-      //console.log( this.isLastMonth("2021-12-24") );
+      
       
 
-       //let time = moment("2022-01-24", "YYYY-MM-DD").fromNow();
-      //console.log(moment().format("YYYY-MM-DD"));
-      //console.log(moment().day());
-      //console.log( moment("2022-01-24", "YYYY-MM-DD").subtract(1, 'week'));
- 
- 
     },
+
+
+
+
 
     sortBySteps(users) {
       return users.sort((a, b) => b.avg_steps - a.avg_steps);
@@ -237,6 +126,9 @@ export default {
       return users.sort((a, b) => b.active_minutes - a.active_minutes);
     },
   },
+
+
+
 
   beforeMount() {
     this.getUsers();
