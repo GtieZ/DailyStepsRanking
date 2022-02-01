@@ -54,6 +54,7 @@
 
 <script>
 import axios from "axios";
+import moment from "moment";
 import general from "../general/general";
 import axiosConfig from "../general/axios-config";
 
@@ -94,7 +95,38 @@ export default {
       this.dailyDataCompleted = true;
     },
 
+    isLastMonth(customDay){
+      let customDay_year = customDay.substring(0,4)
+      let customDay_month = customDay.substring(5,7);
+
+      let today = moment().format("YYYY-MM-DD");
+      let today_year = today.substring(0,4);
+      let today_month = today.substring(5,7);
+
+      if (customDay_year == today_year){
+        return  (Number(today_month)-Number(customDay_month) == 1);
+      }
+
+      if(Number(today_year)-Number(customDay_year) == 1){
+        if(today_month == "01" && customDay_month == "12"){
+          return true
+        }
+      }
+
+      return false;
+    },
+
+
+
+
     onClick() {
+      console.log( this.isLastMonth("2021-12-24") );
+      
+
+       //let time = moment("2022-01-24", "YYYY-MM-DD").fromNow();
+      //console.log(moment().format("YYYY-MM-DD"));
+      //console.log(moment().day());
+      //console.log( moment("2022-01-24", "YYYY-MM-DD").subtract(1, 'week'));
  
  
     },
