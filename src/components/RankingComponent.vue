@@ -9,6 +9,9 @@
     <button>Sort by minutes</button>
   
 
+
+
+
     <div v-for="user in users" :key="user.id">
       <p>id: {{ user.id }}</p>
 
@@ -31,18 +34,23 @@
 
 
     </div>
+
+
+
+
+
+    
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import general from "../general/general";
+import axios from 'axios';
+import general from '../general/general';
+import axiosConfig from '../general/axios-config';
 
 export default {
   name: "RankingComponent",
-  props: {
-
-  },
+  props: {},
   data() {
     return {
       data: undefined,
@@ -51,23 +59,22 @@ export default {
   },
   methods: {
     getUsers() {
-      let token = general.token;
-      let config = {
-        headers: {
-          Authorization: "Token " + token,
-          "Content-Type": "application/json",
-        },
-        params: { limit: 1000 },
-      };
-
+      let config = axiosConfig;
       let url = general.url;
       let endpoint = url + "users/";
 
       axios.get(endpoint, config).then((response) => {
         this.data = response.data;
-        this.users = this.sortBySteps(this.data.results);
+        this.users = this.data.results;
       });
     },
+
+
+
+
+
+
+
 
     sortBySteps(users) {
       return users.sort((a, b) => b.avg_steps - a.avg_steps);
