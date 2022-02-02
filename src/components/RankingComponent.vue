@@ -2,14 +2,13 @@
   <div class="ranking">
     <h1>Ranking</h1>
 
-    <button @click="onClickNtn1">Sort by steps</button>
-    <button @click="onClickNtn2">Sort by distance</button>
-    <button>Sort by calories</button>
-    <button>Sort by minutes</button>
+    <h3 v-if="!this.dailyDataCompleted">cargando...</h3>
+
+    <button @click="onClickBtn1">Daily Average</button>
+    <button @click="onClickBtn2">Last Week Average</button>
+    <button @click="onClickBtn3">Last Month Average</button>
 
     <div v-for="user in users" :key="user.id">
-      <p>id: {{ user.id }}</p>
-
       <p>
         username:
         <router-link
@@ -19,35 +18,38 @@
         </router-link>
       </p>
 
-      <p>email: {{ user.email }}</p>
-      <p>date_joined: {{ user.date_joined }}</p>
-      <p>avg_steps: {{ user.avg_steps }}</p>
-      <p>avg_distance: {{ user.avg_distance }}</p>
-      <p>avg_calories: {{ user.avg_calories }}</p>
-      <p>avg_active_minutes: {{ user.avg_active_minutes }}</p>
+      <div v-if="dailySorted">
+        <p>daily avg_steps: {{ user.avg_steps }}</p>
+        <p>daily avg_distance: {{ user.avg_distance }}</p>
+        <p>daily avg_calories: {{ user.avg_calories }}</p>
+        <p>daily avg_active_minutes: {{ user.avg_active_minutes }}</p>
+      </div>
 
+      <p>---------------</p>
 
+      <div v-if="weekSorted">
+        <p>last week average steps: {{ user.lastWeekAverage.steps }}</p>
+        <p>last week average distance: {{ user.lastWeekAverage.distance }}</p>
+        <p>last week average calories: {{ user.lastWeekAverage.calories }}</p>
+        <p>
+          last week average activeMinutes:
+          {{ user.lastWeekAverage.activeMinutes }}
+        </p>
+      </div>
 
-      <h3>dailyData:</h3>
-      
+      <p>---------------</p>
 
-      <div  v-for="item in user.user_daily_data" :key="item.id">
-
-        <p>---------------</p>
-
-        <p>active_minutes: {{ item.active_minutes }}</p>
-        <p>calories: {{ item.calories }}</p>
-        <p>date: {{ item.date }}</p>
-        <p>distance: {{ item.distance }}</p>
-        <p>id: {{ item.id }}</p>
-        <p>steps: {{ item.steps }}</p>
-        <p>user: {{ item.user }}</p>
-
-
+      <div v-if="monthSorted">
+        <p>last month average steps: {{ user.lastMonthAverage.steps }}</p>
+        <p>last month average distance: {{ user.lastMonthAverage.distance }}</p>
+        <p>last month average calories: {{ user.lastMonthAverage.calories }}</p>
+        <p>
+          last month average activeMinutes:
+          {{ user.lastMonthAverage.activeMinutes }}
+        </p>
       </div>
 
       <hr />
-
     </div>
   </div>
 </template>
@@ -56,7 +58,7 @@
 import axios from "axios";
 import general from "../general/general";
 import axiosConfig from "../general/axios-config";
-import { getUserAverage, isLastWeek, isLastMonth } from '../general/utils';
+import { getUserAverage, isLastWeek, isLastMonth } from "../general/utils";
 
 export default {
   name: "RankingComponent",
@@ -65,6 +67,9 @@ export default {
     return {
       users: [],
       dailyDataCompleted: false,
+      dailySorted: false,
+      weekSorted: false,
+      monthSorted: false,
     };
   },
   methods: {
@@ -93,24 +98,20 @@ export default {
         this.users[i].user_daily_data = userDailyData;
       }
       this.dailyDataCompleted = true;
-      console.log('finalizado');
     },
 
-    getLastWeekAverage(){
+    getLastWeekAverage() {
       this.users.forEach((user, index) => {
         let dailyData = user.user_daily_data;
 
         let filteredData = dailyData.filter((item) => {
           return isLastWeek(item.date);
         });
-
         this.users[index].lastWeekAverage = getUserAverage(filteredData);
       });
-
-      console.log(this.users);
     },
 
-    getLastMonthAverage(){
+    getLastMonthAverage() {
       this.users.forEach((user, index) => {
         let dailyData = user.user_daily_data;
 
@@ -120,72 +121,79 @@ export default {
 
         this.users[index].lastMonthAverage = getUserAverage(filteredData);
       });
-
-      console.log(this.users);
     },
 
- 
+    sortByDailySteps(users) {
+      this.dailySorted = true;
+      this.weekSorted = false;
+      this.monthSorted = false;
 
-
-
-    onClickBtn1() {
-
-      this.getLastWeekAverage();
-      
-      
-
-    },
-
-
-     onClickBtn2() {
-
-      this.getLastMonthAverage();
-      
-      
-
-    },
-
-
-
-
-
-    sortBySteps(users) {
       return users.sort((a, b) => b.avg_steps - a.avg_steps);
     },
 
-    sortByDistance(users) {
-      return users.sort((a, b) => b.avg_distance - a.avg_distance);
+    sortByWeekSteps(users) {
+      this.dailySorted = false;
+      this.weekSorted = true;
+      this.monthSorted = false;
+
+      return users.sort((a, b) => {
+        if (!a.lastWeekAverage.steps) {
+          return 1;
+        }
+        if (!b.lastWeekAverage.steps) {
+          return -1;
+        }
+        return b.lastWeekAverage.steps - a.lastWeekAverage.steps;
+      });
     },
 
-    sortByCalories(users) {
-      return users.sort((a, b) => b.avg_calories - a.avg_calories);
+    sortByMonthSteps(users) {
+      this.dailySorted = false;
+      this.weekSorted = false;
+      this.monthSorted = true;
+
+      return users.sort((a, b) => {
+        if (!a.lastMonthAverage.steps) {
+          return 1;
+        }
+        if (!b.lastMonthAverage.steps) {
+          return -1;
+        }
+        return b.lastMonthAverage.steps - a.lastMonthAverage.steps;
+      });
     },
 
-    sortByActiveMinutes(users) {
-      return users.sort((a, b) => b.active_minutes - a.active_minutes);
+    onClickBtn1() {
+      this.users = this.sortByDailySteps(this.users);
     },
-  },
 
+    onClickBtn2() {
+      this.users = this.sortByWeekSteps(this.users);
+    },
 
-
+    onClickBtn3() {
+      this.users = this.sortByMonthSteps(this.users);
+    },
+  }, //methods
 
   beforeMount() {
     this.getUsers();
   },
 
-  updated(){
-    if(this.users.length > 0 && !this.users[0].user_daily_data){
+  updated() {
+    if (this.users.length > 0 && !this.users[0].user_daily_data) {
       this.appendUserDailyDataToUsers();
     }
 
-    
+    if (this.dailyDataCompleted) {
+      this.dailyDataCompleted = false;
+      this.getLastMonthAverage();
+      this.getLastWeekAverage();
+      this.users = this.sortByDailySteps(this.users);
 
+      console.log(this.users);
+    }
   },
-
-
-
-
-
 };
 </script>
 
