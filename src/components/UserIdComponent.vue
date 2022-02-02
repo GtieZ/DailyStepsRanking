@@ -2,6 +2,10 @@
   <div class="userId">
     <h1>This is UserId</h1>
 
+    <button @click="onClick">accion</button>
+
+    <hr />
+
     <div v-for="item in data" :key="item.id">
       <p>id: {{ item.id }}</p>
       <p>date: {{ item.date }}</p>
@@ -30,6 +34,8 @@ export default {
   data() {
     return {
       data: [],
+      dataPerYear: null,
+
     };
   },
 
@@ -45,6 +51,26 @@ export default {
       });
     },
 
+    getDataPerYear() {
+      let dataPerYear = {};
+
+      this.data.forEach((item) => {
+        let key = item.date.substring(0, 4);
+
+        if (key in dataPerYear) {
+          dataPerYear[key].push(item);
+        } else {
+          dataPerYear[key] = [];
+          dataPerYear[key].push(item);
+        }
+      });
+      this.dataPerYear = dataPerYear;
+    },
+
+    onClick() {
+      this.getDataPerYear();
+      console.log(this.dataPerYear);
+    },
   },
 
   monted() {},
@@ -52,7 +78,5 @@ export default {
   beforeMount() {
     this.getUserData();
   },
-
-  
 };
 </script>
