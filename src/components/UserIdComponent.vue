@@ -1,24 +1,34 @@
 <template>
   <div class="userId">
+
     <p v-if="this.data.lenght == 0">cargando</p>
-    <h1>This is UserId</h1>
+    <h1>UserId: @{{ username }}</h1>
 
     <button @click="onClick">accion</button>
 
+    <BarGraphComponent />
+
     <hr />
 
-    <div v-for="item in data" :key="item.id">
-      <p>id: {{ item.id }}</p>
-      <p>date: {{ item.date }}</p>
-      <p>steps: {{ item.steps }}</p>
-      <p>distance: {{ item.distance }}</p>
-      <p>calories: {{ item.calories }}</p>
-      <p>active_minutes: {{ item.active_minutes }}</p>
 
-      <p>user: {{ item.user }}</p>
+    <div v-if="generalMonthAverage.length > 0">
+      <div v-for="(item, i) in generalMonthAverage" :key="i">
+        <h2>{{ item.year }}</h2>
+        <p>-------------------</p>
+        <div v-for="(month, index) in item.monthlyAverageList" :key="index">
+          <h3>Month: {{ index + 1 }}</h3>
 
-      <hr />
+          <p>avg_steps: {{ month.avg_steps }}</p>
+          <p>avg_distance: {{ month.avg_distance }}</p>
+          <p>avg_calories: {{ month.avg_calories }}</p>
+          <p>avg_active_minutes: {{ month.avg_active_minutes }}</p>
+          <hr />
+        </div>
+
+        <hr />
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -27,19 +37,23 @@
 import axios from "axios";
 import general from "../general/general";
 import axiosConfig from "../general/axios-config";
+import BarGraphComponent from "./BarGraphComponent.vue";
 
 export default {
   name: "UserIdComponent",
   props: {},
-
+  components: {
+    BarGraphComponent
+  },
   data() {
     return {
+      username: '',
       data: [],
       generalMonthAverage: [],
       dataReady: false,
       dataPerYear: null,
       loadDataPerMonth: false,
-      loadMonthAverage: false
+      loadMonthAverage: false,
     };
   },
 
@@ -97,20 +111,20 @@ export default {
       });
     },
 
-    setGeneralMonthAverage(){
+    setGeneralMonthAverage() {
       let keys = Object.keys(this.dataPerYear);
       let generalMonthAverage = [];
 
       keys.forEach((key, i) => {
         let monthArray = this.dataPerYear[key].dataPerMonth;
-        let monthAverageArray = []
+        let monthAverageArray = [];
 
-        monthArray.forEach((itemArray, index) =>{
+        monthArray.forEach((itemArray, index) => {
           let totalSteps = 0;
           let totalDistance = 0;
           let totalCalories = 0;
           let totalMinutes = 0;
-          
+
           itemArray.forEach((item) => {
             totalSteps += Number(item.steps);
             totalDistance += Number(item.distance);
@@ -118,10 +132,10 @@ export default {
             totalMinutes += Number(item.active_minutes);
           });
 
-          let averageSteps = totalSteps/itemArray.length;
-          let averageDistance = totalDistance/itemArray.length;
-          let averageCalories = totalCalories/itemArray.length;
-          let averageMinutes = totalMinutes/itemArray.length;
+          let averageSteps = totalSteps / itemArray.length;
+          let averageDistance = totalDistance / itemArray.length;
+          let averageCalories = totalCalories / itemArray.length;
+          let averageMinutes = totalMinutes / itemArray.length;
 
           monthAverageArray[index] = {
             avg_steps: Math.round(averageSteps),
@@ -133,34 +147,32 @@ export default {
 
         generalMonthAverage[i] = {
           year: key,
-          monthlyAverageList: monthAverageArray
-        }
-
+          monthlyAverageList: monthAverageArray,
+        };
       });
       this.generalMonthAverage = generalMonthAverage;
       this.loadMonthAverage = false;
     },
 
     onClick() {
-
       console.log("generalMonthAverage: ", this.generalMonthAverage);
-
     },
   },
 
-  monted() {},
-
   updated() {
     if (this.dataReady && !this.dataPerYear) {
-      this.getDataPerYear(); 
+      this.getDataPerYear();
     }
-    if(this.loadDataPerMonth){
+    if (this.loadDataPerMonth) {
       this.getDataPerMonth();
     }
-    if(this.loadMonthAverage){
+    if (this.loadMonthAverage) {
       this.setGeneralMonthAverage();
-      console.log("listo");
     }
+  },
+
+  mounted(){
+    this.username = this.$route.params.username;
   },
 
   beforeMount() {

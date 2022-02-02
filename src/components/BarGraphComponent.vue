@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" class="container mt-3" style="background-color: white;">
+  <div id="chart" class="container bg-light border border-2 border-dark my-5" >
     <apexchart
       type="bar"
       height="350"
@@ -12,17 +12,18 @@
 
 <script>
 export default {
-  name: "prueba",
+  name: "BarGraphComponent",
+  props: {},
   data() {
     return {
       series: [
         {
           name: "Net Profit",
-          data: [44, 55, 57, 56, 61, 58, 63, 60, 66, 23, 54, 23],
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66, 23, 54, 32],
         },
         {
           name: "Revenue",
-          data: [76, 85, 101, 98, 87, 105, 91, 114, 94, 54 , 65, 23],
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94, 54 , 65, 12],
         },
         {
           name: "Free Cash Flow",
@@ -30,7 +31,7 @@ export default {
         },
          {
           name: "Another Cash Flow",
-          data: [45, 23, 54, 12, 23, 54, 54, 12, 43, 12, 43, 54],
+          data: [45, 23, 54, 12, 23, 54, 54, 12, 43, 12, 43, 56],
         },
 
       ],
@@ -72,7 +73,7 @@ export default {
         },
         yaxis: {
           title: {
-            text: "$ (thousands)",
+            text: "Average",
           },
         },
         fill: {
