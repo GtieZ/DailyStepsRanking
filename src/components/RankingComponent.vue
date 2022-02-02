@@ -3,9 +3,7 @@
     <h3 v-if="!this.dailyDataCompleted"></h3>
 
     <div v-if="!checkLoading" class="mt-4">
-      <h2 class="text-dark mb-4">
-        <strong>STEP RANKING</strong>
-      </h2>
+      <h2 class="mb-4">Ranking</h2>
       <button class="btn btn-dark" @click="onClickBtn1">Daily Average</button>
       <button class="btn btn-dark mx-2" @click="onClickBtn2">
         Last Week Average
@@ -15,7 +13,7 @@
       </button>
     </div>
 
-    <div v-if="checkLoading">
+    <div v-if="checkLoading" class="mt-5">
       <h4 class="text-dark mb-3">loading...</h4>
       <p><em>(it can take longer)</em></p>
       <img
