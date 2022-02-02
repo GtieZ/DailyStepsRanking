@@ -1,6 +1,7 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import Ranking from '../views/Ranking.vue'
-import UserId from '../views/UserId.vue'
+import { createRouter, createWebHashHistory } from 'vue-router';
+import Ranking from '../views/Ranking.vue';
+import UserId from '../views/UserId.vue';
+import NotFoundComponent from '../components/NotFoundComponent.vue';
 
 const routes = [
   {
@@ -14,7 +15,11 @@ const routes = [
     name: 'UserId',
     component: UserId
   },
-  
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFoundComponent
+  }, 
 ]
 
 const router = createRouter({
