@@ -35,9 +35,11 @@ export default {
   data() {
     return {
       data: [],
+      generalMonthAverage: [],
       dataReady: false,
       dataPerYear: null,
-      loadDataPerMonth: false
+      loadDataPerMonth: false,
+      loadMonthAverage: false
     };
   },
 
@@ -90,13 +92,58 @@ export default {
           }
         });
         this.dataPerYear[key].dataPerMonth = dataPerMonth;
+        this.loadMonthAverage = true;
         this.loadDataPerMonth = false;
       });
     },
 
+    setGeneralMonthAverage(){
+      let keys = Object.keys(this.dataPerYear);
+      let generalMonthAverage = [];
+
+      keys.forEach((key, i) => {
+        let monthArray = this.dataPerYear[key].dataPerMonth;
+        let monthAverageArray = []
+
+        monthArray.forEach((itemArray, index) =>{
+          let totalSteps = 0;
+          let totalDistance = 0;
+          let totalCalories = 0;
+          let totalMinutes = 0;
+          
+          itemArray.forEach((item) => {
+            totalSteps += Number(item.steps);
+            totalDistance += Number(item.distance);
+            totalCalories += Number(item.calories);
+            totalMinutes += Number(item.active_minutes);
+          });
+
+          let averageSteps = totalSteps/itemArray.length;
+          let averageDistance = totalDistance/itemArray.length;
+          let averageCalories = totalCalories/itemArray.length;
+          let averageMinutes = totalMinutes/itemArray.length;
+
+          monthAverageArray[index] = {
+            avg_steps: Math.round(averageSteps),
+            avg_distance: Math.round(averageDistance),
+            avg_calories: Math.round(averageCalories),
+            avg_active_minutes: Math.round(averageMinutes),
+          };
+        });
+
+        generalMonthAverage[i] = {
+          year: key,
+          monthlyAverageList: monthAverageArray
+        }
+
+      });
+      this.generalMonthAverage = generalMonthAverage;
+      this.loadMonthAverage = false;
+    },
+
     onClick() {
 
-      console.log("dataPerYear: ", this.dataPerYear);
+      console.log("generalMonthAverage: ", this.generalMonthAverage);
 
     },
   },
@@ -109,6 +156,9 @@ export default {
     }
     if(this.loadDataPerMonth){
       this.getDataPerMonth();
+    }
+    if(this.loadMonthAverage){
+      this.setGeneralMonthAverage();
       console.log("listo");
     }
   },

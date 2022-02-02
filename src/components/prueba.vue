@@ -1,5 +1,5 @@
 <template>
-  <div id="chart">
+  <div id="chart" class="container">
     <apexchart
       type="bar"
       height="350"
@@ -28,6 +28,11 @@ export default {
           name: "Free Cash Flow",
           data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
         },
+         {
+          name: "Another Cash Flow",
+          data: [45, 23, 54, 12, 23, 54, 54, 12, 43],
+        },
+
       ],
       chartOptions: {
         chart: {
