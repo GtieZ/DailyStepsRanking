@@ -1,55 +1,125 @@
 <template>
-  <div class="ranking">
-    <h1>Ranking</h1>
+  <div class="ranking container">
+    <h3 v-if="!this.dailyDataCompleted"></h3>
 
-    <h3 v-if="!this.dailyDataCompleted">cargando...</h3>
+    <div v-if="!checkLoading" class="mt-4">
+      <h2 class="text-dark mb-4">
+        <strong>STEP RANKING</strong>
+      </h2>
+      <button class="btn btn-dark" @click="onClickBtn1">Daily Average</button>
+      <button class="btn btn-dark mx-2" @click="onClickBtn2">
+        Last Week Average
+      </button>
+      <button class="btn btn-dark" @click="onClickBtn3">
+        Last Month Average
+      </button>
+    </div>
 
-    <button @click="onClickBtn1">Daily Average</button>
-    <button @click="onClickBtn2">Last Week Average</button>
-    <button @click="onClickBtn3">Last Month Average</button>
+    <div v-if="checkLoading">
+      <h4 class="text-dark mb-3">loading...</h4>
+      <p><em>(it can take longer)</em></p>
+      <img
+        src="../assets/images/loading.gif"
+        alt="loading.."
+        class="load-gif"
+      />
+    </div>
 
-    <div v-for="user in users" :key="user.id">
-      <p>
-        username:
-        <router-link
-          :to="{ name: 'UserId', params: { username: user.username } }"
-        >
-          {{ user.username }}
-        </router-link>
-      </p>
+    <div v-for="user in users" :key="user.id" class="mt-5">
+      <!-- CARDS -->
+      <div
+        class="card mx-3 my-4 info-card text-white bg-dark border-white"
+        style="width: 18rem"
+      >
+        <div class="card-header text-end bg-light">
+          <router-link class="text-primary"
+            :to="{ name: 'UserId', params: { username: user.username } }"
+          >
+            @{{ user.username }}
+          </router-link>
+        </div>
+        <!-- SORTED DAILY -->
+        <div v-if="dailySorted">
+          <div class="card-body">
+            <p class="card-text">
+              <em>Daily Average Steps:</em>
+            </p>
+            <h2 class="card-title">
+              {{ user.avg_steps }}
+            </h2>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark"></li>
+            <li class="list-group-item bg-light">
+              <em>daily average distance: </em>
+              <strong>{{ user.avg_distance }}</strong>
+            </li>
+            <li class="list-group-item bg-light">
+              <em>daily average calories: </em>
+              <strong>{{ user.avg_calories }}</strong>
+            </li>
+            <li class="list-group-item bg-light">
+              <em>daily average active minutes: </em>
+              <strong>{{ user.avg_active_minutes }}</strong>
+            </li>
+          </ul>
+        </div>
+        <!-- SORTED LAST WEEK -->
+        <div v-if="weekSorted && user.lastWeekAverage.steps">
+          <div class="card-body">
+            <p class="card-text">
+              <em>Last Week Average Steps:</em>
+            </p>
+            <h2 class="card-title">
+              {{ user.lastWeekAverage.steps }}
+            </h2>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark"></li>
+            <li class="list-group-item bg-light">
+              <em>last week average distance: </em>
+              <strong>{{ user.lastWeekAverage.distance }}</strong>
+            </li>
+            <li class="list-group-item bg-light">
+              <em>last week average calories: </em>
+              <strong>{{ user.lastWeekAverage.calories }}</strong>
+            </li>
+            <li class="list-group-item bg-light">
+              <em>last week average minutes: </em>
+              <strong>{{ user.lastWeekAverage.activeMinutes }}</strong>
+            </li>
+          </ul>
+        </div>
+        <!-- SORTED LAST MONTH -->
+        <div v-if="monthSorted && user.lastMonthAverage.steps">
+          <div class="card-body">
+            <p class="card-text">
+              <em>Last Month Average Steps:</em>
+            </p>
+            <h2 class="card-title">
+              {{ user.lastMonthAverage.steps }}
+            </h2>
+          </div>
 
-      <div v-if="dailySorted">
-        <p>daily avg_steps: {{ user.avg_steps }}</p>
-        <p>daily avg_distance: {{ user.avg_distance }}</p>
-        <p>daily avg_calories: {{ user.avg_calories }}</p>
-        <p>daily avg_active_minutes: {{ user.avg_active_minutes }}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark"></li>
+            <li class="list-group-item bg-light">
+              <em>last month average distance: </em>
+              <strong>{{ user.lastMonthAverage.distance }}</strong>
+            </li>
+            <li class="list-group-item bg-light">
+              <em>last month average calories: </em>
+              <strong>{{ user.lastMonthAverage.calories }}</strong>
+            </li>
+            <li class="list-group-item bg-light">
+              <em>last month average minutes: </em>
+              <strong>{{ user.lastMonthAverage.activeMinutes }}</strong>
+            </li>
+          </ul>
+        </div>
+        <!-- CARD FOOTER -->
+        <div class="card-footer"></div>
       </div>
-
-      <p>---------------</p>
-
-      <div v-if="weekSorted">
-        <p>last week average steps: {{ user.lastWeekAverage.steps }}</p>
-        <p>last week average distance: {{ user.lastWeekAverage.distance }}</p>
-        <p>last week average calories: {{ user.lastWeekAverage.calories }}</p>
-        <p>
-          last week average activeMinutes:
-          {{ user.lastWeekAverage.activeMinutes }}
-        </p>
-      </div>
-
-      <p>---------------</p>
-
-      <div v-if="monthSorted">
-        <p>last month average steps: {{ user.lastMonthAverage.steps }}</p>
-        <p>last month average distance: {{ user.lastMonthAverage.distance }}</p>
-        <p>last month average calories: {{ user.lastMonthAverage.calories }}</p>
-        <p>
-          last month average activeMinutes:
-          {{ user.lastMonthAverage.activeMinutes }}
-        </p>
-      </div>
-
-      <hr />
     </div>
   </div>
 </template>
@@ -70,6 +140,7 @@ export default {
       dailySorted: false,
       weekSorted: false,
       monthSorted: false,
+      checkLoading: true,
     };
   },
   methods: {
@@ -190,18 +261,22 @@ export default {
       this.getLastMonthAverage();
       this.getLastWeekAverage();
       this.users = this.sortByDailySteps(this.users);
-
-      console.log(this.users);
+      this.checkLoading = false;
     }
   },
 };
 </script>
 
 
+<style>
+.info-card {
+  float: left;
+}
 
-
-
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+.load-gif {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  object-position: -80px -87px;
+}
 </style>
