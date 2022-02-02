@@ -1,5 +1,6 @@
 <template>
   <div class="userId">
+    <p v-if="this.data.lenght == 0">cargando</p>
     <h1>This is UserId</h1>
 
     <button @click="onClick">accion</button>
@@ -34,8 +35,9 @@ export default {
   data() {
     return {
       data: [],
+      dataReady: false,
       dataPerYear: null,
-
+      loadDataPerMonth: false
     };
   },
 
@@ -48,6 +50,7 @@ export default {
 
       axios.get(endpoint, config).then((response) => {
         this.data = response.data.results;
+        this.dataReady = true;
       });
     },
 
@@ -58,22 +61,57 @@ export default {
         let key = item.date.substring(0, 4);
 
         if (key in dataPerYear) {
-          dataPerYear[key].push(item);
+          dataPerYear[key].items.push(item);
         } else {
-          dataPerYear[key] = [];
-          dataPerYear[key].push(item);
+          dataPerYear[key] = {};
+          dataPerYear[key].items = [];
+          dataPerYear[key].items.push(item);
         }
       });
       this.dataPerYear = dataPerYear;
+      this.loadDataPerMonth = true;
+    },
+
+    getDataPerMonth() {
+      let keys = Object.keys(this.dataPerYear);
+
+      keys.forEach((key) => {
+        let yearArray = this.dataPerYear[key].items;
+        let dataPerMonth = [];
+
+        yearArray.forEach((item) => {
+          let currentMonthIndex = Number(item.date.substring(5, 7)) - 1;
+
+          if (!dataPerMonth[currentMonthIndex]) {
+            dataPerMonth[currentMonthIndex] = [];
+            dataPerMonth[currentMonthIndex].push(item);
+          } else {
+            dataPerMonth[currentMonthIndex].push(item);
+          }
+        });
+        this.dataPerYear[key].dataPerMonth = dataPerMonth;
+        this.loadDataPerMonth = false;
+      });
     },
 
     onClick() {
-      this.getDataPerYear();
-      console.log(this.dataPerYear);
+
+      console.log("dataPerYear: ", this.dataPerYear);
+
     },
   },
 
   monted() {},
+
+  updated() {
+    if (this.dataReady && !this.dataPerYear) {
+      this.getDataPerYear(); 
+    }
+    if(this.loadDataPerMonth){
+      this.getDataPerMonth();
+      console.log("listo");
+    }
+  },
 
   beforeMount() {
     this.getUserData();
