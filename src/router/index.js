@@ -3,7 +3,6 @@ import Ranking from '../views/Ranking.vue';
 import UserId from '../views/UserId.vue';
 import NotFoundComponent from '../components/NotFoundComponent.vue';
 
-import prueba from '../components/prueba.vue';
 
 const routes = [
   {
@@ -17,12 +16,7 @@ const routes = [
     name: 'UserId',
     component: UserId
   },
-  {
-    path: '/prueba',
-    name: 'prueba',
-    component: prueba
-  },
-
+ 
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',

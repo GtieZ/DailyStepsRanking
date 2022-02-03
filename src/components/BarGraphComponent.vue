@@ -44,7 +44,7 @@ export default {
         },
         yaxis: {
           title: {
-            text: "Average",
+            text: "Amount",
           },
         },
         fill: {

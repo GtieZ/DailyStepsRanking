@@ -7,20 +7,24 @@
     <hr />
 
     <div v-if="generalMonthAverage.length > 0">
-
       <div v-for="(item, index) in generalMonthAverage" :key="index">
         <h2>{{ item.year }}</h2>
-        
+
         <div v-if="showGraph">
           <BarGraphComponent
             :series="getBarMonthSeries(index)"
             :categories="getBarMonthCategories(index)"
           />
 
-        </div>
-        <div class="container"><hr/></div>
-      </div>
+          <HeatMapComponent
+            :series="getBarMonthSeries(index)"
+            :categories="getBarMonthCategories(index)"
+          />
 
+        </div>
+        <div class="container"><hr /></div>
+        
+      </div>
     </div>
   </div>
 </template>
@@ -31,12 +35,14 @@ import axios from "axios";
 import general from "../general/general";
 import axiosConfig from "../general/axios-config";
 import BarGraphComponent from "./BarGraphComponent.vue";
+import HeatMapComponent from "./HeatMapComponent.vue";
 
 export default {
   name: "UserIdComponent",
   props: {},
   components: {
     BarGraphComponent,
+    HeatMapComponent,
   },
   data() {
     return {
@@ -196,7 +202,6 @@ export default {
     },
 
     onClick() {
-     
       console.log("---------------------------------");
       console.log("generalMonthAverage: ", this.generalMonthAverage);
     },
