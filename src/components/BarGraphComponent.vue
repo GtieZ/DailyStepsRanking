@@ -15,6 +15,7 @@ export default {
   name: "BarGraphComponent",
   props: [
     "series",
+    "categories"
   ],
   data() {
     return {
@@ -39,20 +40,7 @@ export default {
           colors: ["transparent"],
         },
         xaxis: {
-          categories: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-          ],
+          categories: this.categories
         },
         yaxis: {
           title: {

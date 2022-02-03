@@ -1,39 +1,27 @@
 <template>
   <div class="userId">
-
     <p v-if="this.data.lenght == 0">cargando</p>
     <h1>UserId: @{{ username }}</h1>
 
     <button @click="onClick">accion</button>
-
-    <div v-if="showGraph">
-      <BarGraphComponent :series="getSeries(0)" />
-
-    </div>
-
-    
-
     <hr />
 
-
     <div v-if="generalMonthAverage.length > 0">
-      <div v-for="(item, i) in generalMonthAverage" :key="i">
+
+      <div v-for="(item, index) in generalMonthAverage" :key="index">
         <h2>{{ item.year }}</h2>
-        <p>-------------------</p>
-        <div v-for="(month, index) in item.monthlyAverageList" :key="index">
-          <h3>Month: {{ index + 1 }}</h3>
+        
+        <div v-if="showGraph">
+          <BarGraphComponent
+            :series="getBarMonthSeries(index)"
+            :categories="getBarMonthCategories(index)"
+          />
 
-          <p>avg_steps: {{ month.avg_steps }}</p>
-          <p>avg_distance: {{ month.avg_distance }}</p>
-          <p>avg_calories: {{ month.avg_calories }}</p>
-          <p>avg_active_minutes: {{ month.avg_active_minutes }}</p>
-          <hr />
         </div>
-
-        <hr />
+        <div class="container"><hr/></div>
       </div>
-    </div>
 
+    </div>
   </div>
 </template>
 
@@ -48,11 +36,11 @@ export default {
   name: "UserIdComponent",
   props: {},
   components: {
-    BarGraphComponent
+    BarGraphComponent,
   },
   data() {
     return {
-      username: '',
+      username: "",
       data: [],
       generalMonthAverage: [],
       dataReady: false,
@@ -159,8 +147,9 @@ export default {
       this.loadMonthAverage = false;
     },
 
-    getSeries(yearIndex){
-      let monthAverageList = this.generalMonthAverage[yearIndex].monthlyAverageList;
+    getBarMonthSeries(yearIndex) {
+      let monthAverageList =
+        this.generalMonthAverage[yearIndex].monthlyAverageList;
 
       let stepsList = [];
       let distanceList = [];
@@ -172,38 +161,43 @@ export default {
         caloriesList.push(item.avg_calories);
         minutesList.push(item.avg_active_minutes);
       });
-    
+
       let series = [
         {
-          name: 'Average Monthly Steps', 
-          data: stepsList
+          name: "Average Monthly Steps",
+          data: stepsList,
         },
         {
-          name: 'Average Monthly Distance', 
-          data: distanceList
+          name: "Average Monthly Distance",
+          data: distanceList,
         },
         {
-          name: 'Average Monthly Calories', 
-          data: caloriesList
+          name: "Average Monthly Calories",
+          data: caloriesList,
         },
         {
-          name: 'Average Monthly Active Minutes', 
-          data: minutesList
-        }
+          name: "Average Monthly Active Minutes",
+          data: minutesList,
+        },
       ];
       return series;
     },
 
+    getBarMonthCategories(yearIndex) {
+      let monthIndex =
+        this.generalMonthAverage[yearIndex].monthlyAverageList.length;
+      let monthes = general.monthes;
+      let categories = [];
+
+      for (let i = 0; i < monthIndex; i++) {
+        categories.push(monthes[i]);
+      }
+      return categories;
+    },
+
     onClick() {
-
-      this.showGraph = true;
-      console.log(this.getSeries(0));
-
-
      
-
-
-      console.log("---------------------------------")
+      console.log("---------------------------------");
       console.log("generalMonthAverage: ", this.generalMonthAverage);
     },
   },
@@ -217,10 +211,11 @@ export default {
     }
     if (this.loadMonthAverage) {
       this.setGeneralMonthAverage();
+      this.showGraph = true;
     }
   },
 
-  mounted(){
+  mounted() {
     this.username = this.$route.params.username;
   },
 
