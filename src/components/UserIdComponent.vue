@@ -3,14 +3,16 @@
     <p v-if="this.data.lenght == 0">cargando</p>
 
     <div class="container my-4">
-      <h6 class="text-dark text-end">
-        UserId: <span class="text-secondary">@{{ username }}</span>
+      <h6 class="text-dark text-end text-muted" style="width = 50px;">
+        UserId: <span class="text-dark">@{{ username }}</span>
       </h6>
+      <hr>
     </div>
 
-    <button @click="onClick">acción</button>
+    <button @click="onClickBtn1" class="btn btn-dark me-2">Month Average</button>
+    <button @click="onClickBtn2" class="btn btn-dark">WeekAverage</button>
 
-    <div v-if="generalMonthAverage.length > 0">
+    <div v-if="generalMonthAverage.length > 0" class="mt-3">
       <div v-for="(item, index) in generalMonthAverage" :key="index">
         <div class="container">
           <div class="alert alert-dark border-dark" style="width: 100px">
@@ -19,17 +21,32 @@
         </div>
 
         <div v-if="showGraph">
-          <BarGraphComponent
-            :series="getBarMonthSeries(index)"
-            :categories="getBarMonthCategories(index)"
-          />
+          <div v-if="isMonthOptionGraph">
+            <BarGraphComponent
+              :series="getSeries(index)"
+              :categories="getMonthCategories(index)"
+            />
+            <HeatMapComponent
+              :series="getSeries(index)"
+              :categories="getMonthCategories(index)"
+            />
+          </div>
 
-          <HeatMapComponent
-            :series="getBarMonthSeries(index)"
-            :categories="getBarMonthCategories(index)"
-          />
+          <div v-else>
+            <BarGraphComponent
+              :series="getSeries(index)"
+              :categories="getWeekCategories(index)"
+            />
+            <HeatMapComponent
+              :series="getSeries(index)"
+              :categories="getWeekCategories(index)"
+            />
+          </div>
+
         </div>
+
         <div class="container"><hr /></div>
+
       </div>
     </div>
   </div>
@@ -62,6 +79,7 @@ export default {
       loadDataPerMonth: false,
       loadMonthAverage: false,
       showGraph: false,
+      isMonthOptionGraph: true,
     };
   },
   methods: {
@@ -105,7 +123,7 @@ export default {
         yearArray.forEach((item) => {
           let currentMonthIndex = Number(item.date.substring(5, 7)) - 1;
 
-          if (!dataPerMonth[currentMonthIndex]) {
+          if(!dataPerMonth[currentMonthIndex]) {
             dataPerMonth[currentMonthIndex] = [];
             dataPerMonth[currentMonthIndex].push(item);
           } else {
@@ -156,6 +174,7 @@ export default {
           year: key,
           monthlyAverageList: monthAverageArray,
         };
+        
       });
       this.generalMonthAverage = generalMonthAverage;
       this.loadMonthAverage = false;
@@ -171,7 +190,7 @@ export default {
 
         items.forEach((item) => {
           let weekOfYear = moment(item.date, "YYYY-MM-DD").week();
-          if (!averageWeekListOfItems[weekOfYear - 1]) {
+          if(!averageWeekListOfItems[weekOfYear - 1]) {
             averageWeekListOfItems[weekOfYear - 1] = [];
           }
           averageWeekListOfItems[weekOfYear - 1].push(item);
@@ -194,9 +213,7 @@ export default {
           avg_steps = Math.round(avg_steps / listOfItems.length);
           avg_distance = Math.round(avg_distance / listOfItems.length);
           avg_calories = Math.round(avg_calories / listOfItems.length);
-          avg_active_minutes = Math.round(
-            avg_active_minutes / listOfItems.length
-          );
+          avg_active_minutes = Math.round(avg_active_minutes / listOfItems.length);
 
           weekOfYearAverageList[index] = {
             avg_steps: avg_steps,
@@ -215,15 +232,20 @@ export default {
       this.generalWeekAverage = generalWeekAverage;
     },
 
-    getBarMonthSeries(yearIndex) {
-      let monthAverageList =
-        this.generalMonthAverage[yearIndex].monthlyAverageList;
+    getSeries(yearIndex) {
+      let AverageList;
+      if(this.isMonthOptionGraph){
+        AverageList = this.generalMonthAverage[yearIndex].monthlyAverageList;
+      } else {
+        AverageList = this.generalWeekAverage[yearIndex].weekOfYearAverageList;
+      }
 
       let stepsList = [];
       let distanceList = [];
       let caloriesList = [];
       let minutesList = [];
-      monthAverageList.forEach((item) => {
+
+      AverageList.forEach((item) => {
         stepsList.push(item.avg_steps);
         distanceList.push(item.avg_distance);
         caloriesList.push(item.avg_calories);
@@ -251,40 +273,49 @@ export default {
       return series;
     },
 
-    getBarMonthCategories(yearIndex) {
-      let monthIndex =
-        this.generalMonthAverage[yearIndex].monthlyAverageList.length;
+    getMonthCategories(yearIndex) {
+      let monthIndex = this.generalMonthAverage[yearIndex].monthlyAverageList.length;
       let monthes = general.monthes;
       let categories = [];
 
-      for (let i = 0; i < monthIndex; i++) {
+      for(let i = 0; i < monthIndex; i++) {
         categories.push(monthes[i]);
       }
       return categories;
     },
 
-    onClick() {
+    getWeekCategories(yearIndex){
+      let weekIndex = this.generalWeekAverage[yearIndex].weekOfYearAverageList.length;
+      let categories = [];
 
-      
-      this.setGeneralWeekAverage();
-      console.log(this.generalWeekAverage);
-
-     
-
-
-
+      for(let i = 0; i < weekIndex; i++){
+        let label = 'Week'+i.toString();
+        categories.push(label);
+      }
+      return categories;
     },
+
+    onClickBtn1() {
+      this.isMonthOptionGraph = true;
+    },
+
+    onClickBtn2() {
+      this.isMonthOptionGraph = false;
+    },
+
   },
 
   updated() {
-    if (this.dataReady && !this.dataPerYear) {
+    if(this.dataReady && !this.dataPerYear) {
       this.getDataPerYear();
     }
-    if (this.loadDataPerMonth) {
+    if(this.loadDataPerMonth) {
       this.getDataPerMonth();
     }
-    if (this.loadMonthAverage) {
+    if(this.loadMonthAverage) {
       this.setGeneralMonthAverage();
+      this.setGeneralWeekAverage();
+
       this.showGraph = true;
     }
   },

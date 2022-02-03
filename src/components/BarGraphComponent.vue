@@ -24,6 +24,7 @@ export default {
           type: "bar",
           height: 350,
         },
+
         plotOptions: {
           bar: {
             horizontal: false,
@@ -31,25 +32,31 @@ export default {
             endingShape: "rounded",
           },
         },
+
         dataLabels: {
           enabled: false,
         },
+
         stroke: {
           show: true,
           width: 2,
           colors: ["transparent"],
         },
+
         xaxis: {
           categories: this.categories
         },
+
         yaxis: {
           title: {
             text: "Amount",
           },
         },
+
         fill: {
           opacity: 1,
         },
+
         tooltip: {
           y: {
             formatter: function (val) {
@@ -58,8 +65,9 @@ export default {
           },
         },
       },
-    }; //end return
+    }; 
   }, //end data
+  updated(){},
 };
 </script>
 
