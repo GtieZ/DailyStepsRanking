@@ -3,23 +3,21 @@
     <p v-if="this.data.lenght == 0">cargando</p>
 
     <div class="container my-4">
-
-          <h6 class="text-dark text-end">
-            UserId: <span class="text-secondary">@{{ username }}</span>
-          </h6>
-
+      <h6 class="text-dark text-end">
+        UserId: <span class="text-secondary">@{{ username }}</span>
+      </h6>
     </div>
-    
+
+    <button @click="onClick">acción</button>
 
     <div v-if="generalMonthAverage.length > 0">
       <div v-for="(item, index) in generalMonthAverage" :key="index">
-
-    <div class="container">
-       <div class="alert alert-dark border-dark" style="width: 100px;">
-          <h4>{{ item.year }}</h4>
+        <div class="container">
+          <div class="alert alert-dark border-dark" style="width: 100px">
+            <h4>{{ item.year }}</h4>
+          </div>
         </div>
-    </div>
-        
+
         <div v-if="showGraph">
           <BarGraphComponent
             :series="getBarMonthSeries(index)"
@@ -30,10 +28,8 @@
             :series="getBarMonthSeries(index)"
             :categories="getBarMonthCategories(index)"
           />
-
         </div>
         <div class="container"><hr /></div>
-
       </div>
     </div>
   </div>
@@ -46,6 +42,7 @@ import general from "../general/general";
 import axiosConfig from "../general/axios-config";
 import BarGraphComponent from "./BarGraphComponent.vue";
 import HeatMapComponent from "./HeatMapComponent.vue";
+import moment from "moment";
 
 export default {
   name: "UserIdComponent",
@@ -59,6 +56,7 @@ export default {
       username: "",
       data: [],
       generalMonthAverage: [],
+      generalWeekAverage: [],
       dataReady: false,
       dataPerYear: null,
       loadDataPerMonth: false,
@@ -163,6 +161,60 @@ export default {
       this.loadMonthAverage = false;
     },
 
+    setGeneralWeekAverage() {
+      let generalWeekAverage = [];
+
+      let keys = Object.keys(this.dataPerYear);
+      keys.forEach((key) => {
+        let items = this.dataPerYear[key].items;
+        let averageWeekListOfItems = [];
+
+        items.forEach((item) => {
+          let weekOfYear = moment(item.date, "YYYY-MM-DD").week();
+          if (!averageWeekListOfItems[weekOfYear - 1]) {
+            averageWeekListOfItems[weekOfYear - 1] = [];
+          }
+          averageWeekListOfItems[weekOfYear - 1].push(item);
+        });
+
+        let weekOfYearAverageList = [];
+        averageWeekListOfItems.forEach((listOfItems, index) => {
+          let avg_steps = 0;
+          let avg_distance = 0;
+          let avg_calories = 0;
+          let avg_active_minutes = 0;
+
+          listOfItems.forEach((item) => {
+            avg_steps += item.steps;
+            avg_distance += item.distance;
+            avg_calories += item.calories;
+            avg_active_minutes += item.active_minutes;
+          });
+
+          avg_steps = Math.round(avg_steps / listOfItems.length);
+          avg_distance = Math.round(avg_distance / listOfItems.length);
+          avg_calories = Math.round(avg_calories / listOfItems.length);
+          avg_active_minutes = Math.round(
+            avg_active_minutes / listOfItems.length
+          );
+
+          weekOfYearAverageList[index] = {
+            avg_steps: avg_steps,
+            avg_distance: avg_distance,
+            avg_calories: avg_calories,
+            avg_active_minutes: avg_active_minutes,
+          };
+        });
+
+        generalWeekAverage.push({
+          year: key,
+          weekOfYearAverageList: weekOfYearAverageList,
+        });
+      });
+
+      this.generalWeekAverage = generalWeekAverage;
+    },
+
     getBarMonthSeries(yearIndex) {
       let monthAverageList =
         this.generalMonthAverage[yearIndex].monthlyAverageList;
@@ -212,8 +264,15 @@ export default {
     },
 
     onClick() {
-      console.log("---------------------------------");
-      console.log("generalMonthAverage: ", this.generalMonthAverage);
+
+      
+      this.setGeneralWeekAverage();
+      console.log(this.generalWeekAverage);
+
+     
+
+
+
     },
   },
 
