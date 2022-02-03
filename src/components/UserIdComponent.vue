@@ -6,7 +6,12 @@
 
     <button @click="onClick">accion</button>
 
-    <BarGraphComponent />
+    <div v-if="showGraph">
+      <BarGraphComponent :series="getSeries(0)" />
+
+    </div>
+
+    
 
     <hr />
 
@@ -54,9 +59,9 @@ export default {
       dataPerYear: null,
       loadDataPerMonth: false,
       loadMonthAverage: false,
+      showGraph: false,
     };
   },
-
   methods: {
     getUserData() {
       let config = axiosConfig;
@@ -154,7 +159,51 @@ export default {
       this.loadMonthAverage = false;
     },
 
+    getSeries(yearIndex){
+      let monthAverageList = this.generalMonthAverage[yearIndex].monthlyAverageList;
+
+      let stepsList = [];
+      let distanceList = [];
+      let caloriesList = [];
+      let minutesList = [];
+      monthAverageList.forEach((item) => {
+        stepsList.push(item.avg_steps);
+        distanceList.push(item.avg_distance);
+        caloriesList.push(item.avg_calories);
+        minutesList.push(item.avg_active_minutes);
+      });
+    
+      let series = [
+        {
+          name: 'Average Monthly Steps', 
+          data: stepsList
+        },
+        {
+          name: 'Average Monthly Distance', 
+          data: distanceList
+        },
+        {
+          name: 'Average Monthly Calories', 
+          data: caloriesList
+        },
+        {
+          name: 'Average Monthly Active Minutes', 
+          data: minutesList
+        }
+      ];
+      return series;
+    },
+
     onClick() {
+
+      this.showGraph = true;
+      console.log(this.getSeries(0));
+
+
+     
+
+
+      console.log("---------------------------------")
       console.log("generalMonthAverage: ", this.generalMonthAverage);
     },
   },
