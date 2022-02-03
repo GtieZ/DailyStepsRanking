@@ -1,15 +1,25 @@
 <template>
   <div class="userId">
     <p v-if="this.data.lenght == 0">cargando</p>
-    <h1>UserId: @{{ username }}</h1>
 
-    <button @click="onClick">accion</button>
-    <hr />
+    <div class="container my-4">
+
+          <h6 class="text-dark text-end">
+            UserId: <span class="text-secondary">@{{ username }}</span>
+          </h6>
+
+    </div>
+    
 
     <div v-if="generalMonthAverage.length > 0">
       <div v-for="(item, index) in generalMonthAverage" :key="index">
-        <h2>{{ item.year }}</h2>
 
+    <div class="container">
+       <div class="alert alert-dark border-dark" style="width: 100px;">
+          <h4>{{ item.year }}</h4>
+        </div>
+    </div>
+        
         <div v-if="showGraph">
           <BarGraphComponent
             :series="getBarMonthSeries(index)"
@@ -23,7 +33,7 @@
 
         </div>
         <div class="container"><hr /></div>
-        
+
       </div>
     </div>
   </div>

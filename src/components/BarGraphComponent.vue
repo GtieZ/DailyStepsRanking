@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" class="container bg-light border border-2 border-dark my-5 rounded-3" >
+  <div id="chart" class="container bg-light border border-2 border-dark my-3 rounded-3" >
     <apexchart
       type="bar"
       height="350"

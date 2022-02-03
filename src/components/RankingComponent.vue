@@ -277,4 +277,12 @@ export default {
   object-fit: cover;
   object-position: -80px -87px;
 }
+
+
+
+@media (max-width: 496px){
+  .btn{
+    margin-block-start: 10px;
+  }
+}
 </style>
