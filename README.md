@@ -1,24 +1,7 @@
-# daily-steps-ranking
+# DailyStepsRanking
 
-## Project setup
-```
-npm install
-```
+This is a trainig Vue3 front-end webapp.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+It uses the step-meter-pp4publmdq-ez.a.run.app API
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+https://gtiez.github.io/DailyStepsRanking/
